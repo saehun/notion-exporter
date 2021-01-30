@@ -1,10 +1,8 @@
 import { ExportContext } from './types';
+import { cfduid, tokenV2 } from './env';
 
 // Http Only Cookies;
 const httpOnlyCookies = (): string => {
-  const tokenV2 = process.env.NOTION_TOKEN_V2;
-  const cfduid = process.env.NOTION_TOKEN_CFDUID;
-
   if (tokenV2 && cfduid) {
     return `; token_v2=${tokenV2}; __cfduid=${cfduid}`;
   }

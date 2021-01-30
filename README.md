@@ -1,4 +1,7 @@
 # Notion Exporter
+Commandline script to export notion as markdown and commit to git-repository
+
+> NOTE: works only in MacOS
 
 ![image](https://user-images.githubusercontent.com/16033316/106333531-36f7ec00-62cc-11eb-9595-a15e39ea2d91.png)
 

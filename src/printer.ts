@@ -3,7 +3,7 @@ import * as ora from 'ora';
 /**
  * spinning terminal printer
  */
-export function printer(): any {
+export function printer() {
   const spinner = ora();
   return {
     start: (text: string): any => spinner.start(text),

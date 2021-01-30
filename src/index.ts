@@ -1,4 +1,3 @@
-require('dotenv').config();
 import { getCookies, getTargetUrl } from './appleScript';
 import { createContext } from './context';
 import { downloadZip } from './downloadZip';
