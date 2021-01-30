@@ -1,5 +1,5 @@
 import { ExportContext } from './types';
-import { cfduid, tokenV2 } from './env';
+import { cfduid, tokenV2 } from '../env';
 
 // Http Only Cookies;
 const httpOnlyCookies = (): string => {
