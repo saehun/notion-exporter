@@ -7,6 +7,8 @@
   "repository": "minidonut/notion-exporter",
   "scripts": {
     "build": "tsc",
+    "export": "./dist/index.js",
+    "postbuild": "./postbuild.sh",
     "test": "NODE_ENV=test jest",
     "lint": "eslint . --ext .js,.ts",
     "start": "ts-node src/index.ts",
@@ -46,5 +48,8 @@
     "rimraf": "^3.0.2",
     "unzipper": "^0.10.11",
     "uuid": "^8.3.2"
+  },
+  "bin": {
+    "notion-export": "dist/index.js"
   }
 }
