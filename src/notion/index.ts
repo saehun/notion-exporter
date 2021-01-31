@@ -6,9 +6,10 @@ import { requestEnqueueTask } from './requestEnqueueTask';
 import { printer } from './printer';
 import * as chalk from 'chalk';
 
-export async function downloadNotionMarkdown(): Promise<string> {
+export async function download(): Promise<string> {
+  // return 'exported-1612090310266';
   try {
-    console.log(chalk.yellowBright('[1/3] Notion'));
+    console.log(chalk.yellowBright('[1/3] Download from notion'));
     const print = printer();
 
     print.start('retreive notion url and cookies');
@@ -18,10 +19,10 @@ export async function downloadNotionMarkdown(): Promise<string> {
     print.step('waiting download link is ready');
     const link = await requestDownloadLink(context, taskId);
     print.step('download zip file');
-    const zipfile = await downloadZip(link);
+    const filename = await downloadZip(link);
     print.done();
 
-    return zipfile;
+    return filename;
   } catch ({ isAxiosError, response, message }) {
     console.error(isAxiosError ? response?.data : message);
     process.exit(1);

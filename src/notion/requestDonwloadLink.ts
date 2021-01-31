@@ -12,7 +12,7 @@ export async function requestDownloadLink(ctx: ExportContext, taskId: string): P
   let task: ExportTaskResult;
   do {
     task = await requestTaskStatus(ctx, taskId);
-    if (task.status.type === 'complete') {
+    if (task.status?.type === 'complete') {
       return task.status.exportURL;
     }
     await new Promise(resolve => setTimeout(resolve, INTERVAL));

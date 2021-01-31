@@ -1,8 +1,6 @@
-import { downloadNotionMarkdown } from './notion';
+import { transform } from './transform';
+import { download } from './notion';
+import { commit } from './commit';
 
-async function main() {
-  const zipFile = await downloadNotionMarkdown();
-  console.log(zipFile);
-}
-
-main();
+// main
+download().then(transform).then(commit);
