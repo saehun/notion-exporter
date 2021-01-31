@@ -3,6 +3,7 @@ import * as fs from 'fs/promises';
 import * as execa from 'execa';
 import { accessKeyId, bucket, cdnUrl, secretAccessKey } from '../env';
 import { v4 as uuid } from 'uuid';
+import * as path from 'path';
 const dirTree = require('directory-tree');
 const rimraf = require('rimraf');
 
@@ -60,7 +61,7 @@ async function unzip(filename: string): Promise<void> {
 
 export async function transform(filename: string) {
   console.log(chalk.yellowBright('[2/3] Transform document'));
-  // await unzip(filename);
+  await unzip(filename);
   const tree = dirTree(filename);
 
   const document: DirItem = tree.children.find((child: DirItem) => child.type === 'file');
@@ -69,29 +70,19 @@ export async function transform(filename: string) {
 
   let text = await fs.readFile(document.path, 'utf-8');
 
-  // const uploadedImages = await uploadToS3(images);
-  const uploadedImages = [
-    {
-      name: 'Untitled 1.png',
-      path: 'Copy of TEMPLATE 한글 71e458d1c7e34be1be9856f81a2e1be3/Untitled 1.png',
-      url: 'https://cdn.saeh.io/notion/ed42afd3-93e3-493c-b898-3f8cfb395b45.png',
-    },
-    {
-      name: 'Untitled.png',
-      path: 'Copy of TEMPLATE 한글 71e458d1c7e34be1be9856f81a2e1be3/Untitled.png',
-      url: 'https://cdn.saeh.io/notion/401c36d1-1285-42f1-b8b8-f50a2d335e58.png',
-    },
-  ];
+  const uploadedImages = await uploadToS3(images);
 
   for (const image of uploadedImages) {
     const original = encodeURI(image.path);
     const updated = image.url;
-    console.log(original, updated);
     text = text.replace(`[${original}]`, '[attachment]');
     text = text.replace(`(${original})`, `(${updated})`);
   }
 
-  return extractMeta(text);
+  return {
+    ...extractMeta(text),
+    exported: path.join(process.cwd(), filename),
+  };
 }
 
 function extractMeta(text: string): { meta: Record<string, string>; content: string } {
