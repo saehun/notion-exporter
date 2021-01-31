@@ -23,6 +23,7 @@
     "@types/node": "^14.14.10",
     "@types/rimraf": "^3.0.0",
     "@types/unzipper": "^0.10.3",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
     "eslint": "^7.14.0",
@@ -34,13 +35,16 @@
   },
   "dependencies": {
     "@sindresorhus/is": "^4.0.0",
+    "aws-sdk": "^2.834.0",
     "axios": "^0.21.1",
     "chalk": "^4.1.0",
+    "directory-tree": "^2.2.5",
     "dotenv": "^8.2.0",
     "execa": "^5.0.0",
     "fs-extra": "^9.1.0",
     "ora": "^5.3.0",
     "rimraf": "^3.0.2",
-    "unzipper": "^0.10.11"
+    "unzipper": "^0.10.11",
+    "uuid": "^8.3.2"
   }
 }

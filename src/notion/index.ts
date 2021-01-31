@@ -7,7 +7,7 @@ import { printer } from './printer';
 import * as chalk from 'chalk';
 
 export async function download(): Promise<string> {
-  // return 'exported-1612090310266';
+  // return 'exported-1612091812945';
   try {
     console.log(chalk.yellowBright('[1/3] Download from notion'));
     const print = printer();
