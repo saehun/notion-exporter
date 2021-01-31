@@ -4,6 +4,7 @@ import * as execa from 'execa';
 import { accessKeyId, bucket, cdnUrl, secretAccessKey } from '../env';
 import { v4 as uuid } from 'uuid';
 const dirTree = require('directory-tree');
+const rimraf = require('rimraf');
 
 import * as S3 from 'aws-sdk/clients/s3';
 
@@ -37,7 +38,7 @@ async function uploadToS3(images: DirItem[]) {
 
       return {
         name: image.name,
-        path: image.path,
+        path: image.path.replace(/^.*?\//, ''),
         url: `${cdnUrl}/notion/${id}.png`,
       };
     });
@@ -45,7 +46,16 @@ async function uploadToS3(images: DirItem[]) {
 }
 
 async function unzip(filename: string): Promise<void> {
-  await execa('unzip', [filename + '.zip', '-d', filename]);
+  rimraf.sync(filename);
+  await execa('ditto', [
+    '-V',
+    '-x',
+    '-k',
+    '--sequesterRsrc',
+    '--rsrc',
+    filename + '.zip',
+    filename,
+  ]);
 }
 
 export async function transform(filename: string) {
@@ -57,26 +67,55 @@ export async function transform(filename: string) {
   const images: DirItem[] =
     tree.children.find((child: DirItem) => child.type === 'directory')?.children ?? [];
 
-  const text = await fs.readFile(document.path, 'utf-8');
+  let text = await fs.readFile(document.path, 'utf-8');
 
-  const uploadedImages = await uploadToS3(images);
-  console.log(uploadedImages);
+  // const uploadedImages = await uploadToS3(images);
+  const uploadedImages = [
+    {
+      name: 'Untitled 1.png',
+      path: 'Copy of TEMPLATE 한글 71e458d1c7e34be1be9856f81a2e1be3/Untitled 1.png',
+      url: 'https://cdn.saeh.io/notion/ed42afd3-93e3-493c-b898-3f8cfb395b45.png',
+    },
+    {
+      name: 'Untitled.png',
+      path: 'Copy of TEMPLATE 한글 71e458d1c7e34be1be9856f81a2e1be3/Untitled.png',
+      url: 'https://cdn.saeh.io/notion/401c36d1-1285-42f1-b8b8-f50a2d335e58.png',
+    },
+  ];
 
-  // for (const image of uploadedImages) {
-  //   text.replace();
-  // }
-  // console.log(text)
+  for (const image of uploadedImages) {
+    const original = encodeURI(image.path);
+    const updated = image.url;
+    console.log(original, updated);
+    text = text.replace(`[${original}]`, '[attachment]');
+    text = text.replace(`(${original})`, `(${updated})`);
+  }
 
-  /*
-  const documentName = await getDocumentName(filename);
-  const images = await getImages(filename, documentName);
+  return extractMeta(text);
+}
 
-  await uploadToS3(images);
-  const content = await
-  */
+function extractMeta(text: string): { meta: Record<string, string>; content: string } {
+  const lines = text.split('\n');
+  const title = lines[0].replace(/^#/, '');
+  const metaStart = lines.indexOf('') + 1;
+  const metaEnd = lines.indexOf('', metaStart);
+
+  const meta = lines.slice(metaStart, metaEnd).reduce(
+    (acc, line) => {
+      const parsed = /^(.+?): (.*)$/.exec(line);
+      if (parsed == null) {
+        throw new Error(`${line} does not match meta format`);
+      }
+      const [, key, value] = parsed;
+      return { ...acc, [key]: value };
+    },
+    { title }
+  );
+
+  const content = lines.slice(metaEnd + 1).join('\n');
 
   return {
-    content: 'asdf',
-    meta: {},
+    meta,
+    content,
   };
 }
