@@ -15,7 +15,7 @@ export async function commit({
   content: string;
   meta: Record<string, any>;
 }): Promise<any> {
-  if (typeof meta.key !== 'string' || meta.key.length > 8) {
+  if (typeof meta.key !== 'string' || meta.key.length < 8) {
     throw new Error(`Invalid meta data:
  ${JSON.stringify(meta, undefined, 2)}`);
   }
@@ -24,16 +24,17 @@ export async function commit({
   const filename = encodeURI(meta.key.replace(/\s/g, '-'));
 
   await Promise.all([
-    fs.writeFile(content, path.join(basedir, filename + 'md')),
+    fs.writeFile(path.join(basedir, filename + '.md'), content),
     fs.writeFile(
-      JSON.stringify(meta, undefined, 2),
-      path.join(basedir, filename + 'json')
+      path.join(basedir, filename + '.json'),
+      JSON.stringify(meta, undefined, 2)
     ),
   ]);
 
   // TODO find git root
   const workdir = path.join(basedir, '..');
   process.chdir(workdir);
+  await execa('git', ['pull', 'origin', 'master']);
   await execa('git', ['add', '.'], { stdio: 'inherit' });
   await execa('git', ['commit', '-m', 'add document'], { stdio: 'inherit' });
   await execa('git', ['push', 'origin', 'master']);

@@ -34,6 +34,7 @@ async function uploadToS3(images: DirItem[]) {
           Body: file,
           Key: `notion/${id}.png`,
           ACL: 'public-read',
+          ContentType: 'image/png',
         })
         .promise();
 
